@@ -1,13 +1,13 @@
 import type { Flip } from './types';
 
-export const COLS = 2;
-export const ROWS = 4;
+export const COLS = 3;
+export const ROWS = 5;
 export const PER_SHEET = COLS * ROWS;
 
 /** Afmetingen in mm (A4 = 210 × 297). Marges links/rechts en boven/onder zijn gelijk,
  *  zodat voor- en achterkant ook na het omdraaien precies op elkaar vallen. */
-export const CARD_W = 95;
-export const CARD_H = 68;
+export const CARD_W = 65;
+export const CARD_H = 56;
 export const MARGIN_X = (210 - COLS * CARD_W) / 2;
 export const MARGIN_Y = (297 - ROWS * CARD_H) / 2;
 

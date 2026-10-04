@@ -1,4 +1,4 @@
-# Gotcha – geheime kettingtrekking
+# Gotcha: geheime kettingtrekking
 
 Website om namen te verdelen voor **Gotcha**, **Secret Santa** of **Secret Valentine**.
 Je geeft de deelnemers in (of plakt een lijst uit Excel), de website maakt één geheime

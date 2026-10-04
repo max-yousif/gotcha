@@ -21,10 +21,10 @@ describe('backIndex', () => {
 });
 
 describe('layoutSheets', () => {
-  it('100 leerlingen → 13 vellen, iedereen één keer voor en achter', () => {
+  it('100 leerlingen → 7 vellen, iedereen één keer voor en achter', () => {
     const items = Array.from({ length: 100 }, (_, i) => i);
     const sheets = layoutSheets(items, 'long', (i) => `voor${i}`, (i) => `achter${i}`);
-    expect(sheets).toHaveLength(13);
+    expect(sheets).toHaveLength(7);
     const fronts = sheets.flatMap((s) => s.front).filter(Boolean);
     const backs = sheets.flatMap((s) => s.back).filter(Boolean);
     expect(fronts).toHaveLength(100);
