@@ -359,19 +359,19 @@ gotcha/
 
 ## 10. Stappenplan
 
-### Fase 1 — Klaar voor de klas
-- [ ] Project opzetten: Vite + React + TypeScript + Tailwind, Vitest.
-- [ ] `random.ts` + `chain.ts` met volledige tests (één lus, niemand zichzelf,
+### Fase 1 — Klaar voor de klas ✅
+- [x] Project opzetten: Vite + React + TypeScript + Tailwind, Vitest.
+- [x] `random.ts` + `chain.ts` met volledige tests (één lus, niemand zichzelf,
       eerlijke verdeling).
-- [ ] Deelnemerslijst (naam, klas, e-mail optioneel), bewaard in de browser.
-- [ ] Thema + "Ik speel zelf mee" (blinde modus).
-- [ ] Afdrukbare kaartjes **met namen**, recto-verso lay-out + veiligheidspatroon,
+- [x] Deelnemerslijst (naam, klas, e-mail optioneel), bewaard in de browser.
+- [x] Plakken uit Excel (met herkenning van kolomtitels) — naar voren gehaald uit fase 2.
+- [x] Thema + "Ik speel zelf mee" (blinde modus); trekking versleuteld bewaard.
+- [x] Afdrukbare kaartjes **met namen**, recto-verso lay-out + veiligheidspatroon,
       testpagina, uitdeellijst.
-- [ ] Online zetten via GitHub Pages.
+- [x] Online zetten via GitHub Pages (workflow klaar; Pages nog aanzetten in GitHub).
 
 ### Fase 2 — Import & QR
 - [ ] Excel/CSV-import met kolomherkenning + voorbeeldtabel; sjabloon.
-- [ ] Plakken uit Excel.
 - [ ] Kaartjes **met QR-code** + onthulpagina.
 - [ ] Verzegelde back-up met wachtwoord.
 - [ ] Niet-blinde modus met overzicht + Excel-export.
