@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { openBackup, sealBackup, WrongPasswordError, type BackupContent } from '../src/lib/sealedBackup';
 
 const content: BackupContent = {
-  settings: { theme: 'gotcha', eventName: 'Gotcha', rules: 'Regels', playing: true, cardType: 'names', flip: 'long' },
+  settings: { theme: 'gotcha', eventName: 'Gotcha', rules: 'Regels', playing: true, cardType: 'names', flip: 'long', mailServer: '' },
   participants: [
     { id: 'a', name: 'Anna', klas: '5A', email: '' },
     { id: 'b', name: 'Bert', klas: '5B', email: 'bert@x.be' },

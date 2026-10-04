@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { PER_SHEET } from '../lib/cardLayout';
 import type { CardType, Flip } from '../lib/types';
 import type { PrintJob } from './PrintArea';
@@ -10,7 +11,9 @@ interface Props {
   onFlipChange: (f: Flip) => void;
   cardType: CardType;
   onCardTypeChange: (t: CardType) => void;
-  onPrint: (job: PrintJob) => void;
+  onPrint: (job: PrintJob, onlyWithoutEmail?: boolean) => void;
+  /** Aantal deelnemers zonder e-mailadres (die krijgen een kaartje als de rest gemaild wordt). */
+  withoutEmailCount: number;
   playing: boolean;
 }
 
@@ -32,8 +35,12 @@ function Choice<T extends string>({ name, value, options, onChange }: { name: st
 
 const isLocal = () => ['localhost', '127.0.0.1', ''].includes(location.hostname);
 
-export default function PrintSection({ count, ready, flip, onFlipChange, cardType, onCardTypeChange, onPrint, playing }: Props) {
-  const sheets = Math.ceil(count / PER_SHEET);
+export default function PrintSection({ count, ready, flip, onFlipChange, cardType, onCardTypeChange, onPrint, playing, withoutEmailCount }: Props) {
+  const [onlyWithoutEmail, setOnlyWithoutEmail] = useState(false);
+  const someHaveEmail = withoutEmailCount < count;
+  const only = onlyWithoutEmail && someHaveEmail;
+  const cardCount = only ? withoutEmailCount : count;
+  const sheets = Math.ceil(cardCount / PER_SHEET);
 
   return (
     <Section step={4} title="Kaartjes afdrukken">
@@ -97,6 +104,21 @@ export default function PrintSection({ count, ready, flip, onFlipChange, cardTyp
             <p className="mt-1 text-xs text-slate-500">Kies hetzelfde als in het printvenster van je printer.</p>
           </fieldset>
 
+          {someHaveEmail && (
+            <label className="flex items-start gap-3 rounded-xl border border-slate-200 p-4">
+              <input
+                type="checkbox"
+                className="mt-1 h-4 w-4 accent-[var(--accent)]"
+                checked={onlyWithoutEmail}
+                onChange={(e) => setOnlyWithoutEmail(e.target.checked)}
+              />
+              <span className="text-sm">
+                <span className="font-medium">Enkel deelnemers zonder e-mail ({withoutEmailCount})</span>
+                <span className="block text-slate-600">De anderen krijgen hun doelwit via e-mail (stap 5).</span>
+              </span>
+            </label>
+          )}
+
           <ol className="space-y-3">
             <li className="flex flex-wrap items-center gap-3">
               <Button onClick={() => onPrint('test')}>1. Testpagina afdrukken</Button>
@@ -105,15 +127,15 @@ export default function PrintSection({ count, ready, flip, onFlipChange, cardTyp
               </span>
             </li>
             <li className="flex flex-wrap items-center gap-3">
-              <Button variant="primary" onClick={() => onPrint('cards')}>
+              <Button variant="primary" onClick={() => onPrint('cards', only)}>
                 2. Kaartjes afdrukken
               </Button>
               <span className="text-sm text-slate-600">
-                {count} kaartjes op {sheets} {sheets === 1 ? 'vel' : 'vellen'}, gesorteerd per klas.
+                {cardCount} kaartjes op {sheets} {sheets === 1 ? 'vel' : 'vellen'}, gesorteerd per klas.
               </span>
             </li>
             <li className="flex flex-wrap items-center gap-3">
-              <Button onClick={() => onPrint('handout')}>3. Uitdeellijst afdrukken</Button>
+              <Button onClick={() => onPrint('handout', only)}>3. Uitdeellijst afdrukken</Button>
               <span className="text-sm text-slate-600">Per klas de namen om af te vinken, zonder doelwitten.</span>
             </li>
           </ol>

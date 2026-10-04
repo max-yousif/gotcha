@@ -19,7 +19,7 @@ export const THEMES: Record<ThemeId, Theme> = {
     targetIntro: 'Jouw doelwit is',
     defaultRules:
       'Schakel je doelwit uit volgens de afspraken. Ben je zelf uitgeschakeld? ' +
-      'Geef dan dit kaartje af aan wie jou uitschakelde: jouw doelwit wordt het nieuwe doelwit van die persoon.',
+      'Geef dan je kaartje of e-mail door aan wie jou uitschakelde: jouw doelwit wordt het nieuwe doelwit van die persoon.',
   },
   santa: {
     id: 'santa',

@@ -3,6 +3,7 @@ import { flushSync } from 'react-dom';
 import BackupDialog from './components/BackupDialog';
 import BackupPage from './components/BackupPage';
 import DrawSection from './components/DrawSection';
+import EmailSection from './components/EmailSection';
 import ParticipantsSection from './components/ParticipantsSection';
 import PrintArea, { type CardData, type PrintJob, type PrintRequest } from './components/PrintArea';
 import PrintSection from './components/PrintSection';
@@ -25,6 +26,7 @@ const defaultSettings: Settings = {
   playing: true,
   cardType: 'names',
   flip: 'long',
+  mailServer: '',
 };
 
 /** De trekking hoort bij precies deze deelnemers (namen/klassen aanpassen mag wel). */
@@ -80,11 +82,11 @@ export default function App() {
     window.print();
   };
 
-  const printJob = (job: PrintJob) =>
+  const printJob = (job: PrintJob, onlyWithoutEmail = false) =>
     void print({
       job,
-      cards,
-      participants,
+      cards: onlyWithoutEmail ? cards.filter((c) => !c.player.email.trim()) : cards,
+      participants: onlyWithoutEmail ? participants.filter((p) => !p.email.trim()) : participants,
       theme,
       eventName: settings.eventName || theme.defaultEventName,
       rules: settings.rules,
@@ -175,7 +177,9 @@ export default function App() {
             onCardTypeChange={(cardType) => setSettings({ ...settings, cardType })}
             onPrint={printJob}
             playing={settings.playing}
+            withoutEmailCount={cards.filter((c) => !c.player.email.trim()).length}
           />
+          <EmailSection step={5} cards={cards} draw={draw} ready={drawValid} settings={settings} onSettingsChange={setSettings} />
 
           <footer className="flex flex-wrap items-center justify-between gap-3 pt-4 text-xs text-slate-500">
             <span>Alle gegevens blijven op deze computer; er wordt niets doorgestuurd.</span>
