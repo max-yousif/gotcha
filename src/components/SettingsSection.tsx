@@ -55,10 +55,10 @@ export default function SettingsSection({ settings, onChange }: Props) {
           <textarea
             className={`${inputClass} min-h-20`}
             value={settings.rules}
-            maxLength={350}
+            maxLength={250}
             onChange={(e) => onChange({ ...settings, rules: e.target.value })}
           />
-          <span className="text-xs text-slate-500">{settings.rules.length}/350 tekens</span>
+          <span className="text-xs text-slate-500">{settings.rules.length}/250 tekens</span>
         </label>
         <label className="flex items-start gap-3 rounded-xl border border-slate-200 p-4">
           <input

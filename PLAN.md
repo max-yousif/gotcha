@@ -1,4 +1,4 @@
-# Gotcha / Secret Santa / Secret Valentine — Projectplan
+# Gotcha / Secret Santa / Secret Valentine: Projectplan
 
 Een eenvoudige website waarin de organisator een lijst deelnemers ingeeft (of importeert
 uit Excel) en de app **één gesloten ketting** maakt: A → B → C → … → Z → A. Iedereen
@@ -9,7 +9,7 @@ De volledige website is in het **Nederlands**.
 
 Twee situaties bepalen het ontwerp:
 
-| | School (± 100 leerlingen) | Vrienden (5–30 personen) |
+| | School (± 100 leerlingen) | Vrienden (5 tot 30 personen) |
 |---|---|---|
 | E-mailadressen | **Niet beschikbaar** | Optioneel, per persoon |
 | Verdeling | Afgedrukte kaartjes, uitgedeeld in de klas | E-mail (of afgedrukte kaartjes) |
@@ -25,7 +25,7 @@ Twee situaties bepalen het ontwerp:
    **importeren uit Excel/CSV**. Een lijst mag mensen met en zonder e-mail mengen.
 2. **Eén enkele lus** maken met iedereen erin (geen kleine deelcirkels), en niemand
    trekt zichzelf.
-3. **Blinde modus**: de organisator speelt mee en ziet dus nooit wie wie heeft — ook
+3. **Blinde modus**: de organisator speelt mee en ziet dus nooit wie wie heeft, ook
    niet wie de organisator zelf heeft.
 4. Verdelen zonder gsm of e-mail: afdrukbare kaartjes, met keuze tussen
    **gewone namen** of **QR-code**.
@@ -62,7 +62,7 @@ Voor Secret Santa/Valentine is één lus evengoed geldig, dus de app maakt altij
 ### 3.1 Basisketting
 ```
 1. deelnemers = [p1, p2, ..., pn]           (n >= 3; bij n = 2 krijgen ze elkaar)
-2. schud de lijst met Fisher–Yates op basis van crypto.getRandomValues
+2. schud de lijst met Fisher-Yates op basis van crypto.getRandomValues
    (niet Math.random: zo is de trekking eerlijk en onvoorspelbaar)
 3. voor i in 0..n-1:
        doelwit[geschud[i]] = geschud[(i + 1) % n]
@@ -82,7 +82,7 @@ broers/zussen, dezelfde klas, het koppel van vorig jaar):
 1. Probeer tot ± 1 000 willekeurige schuddingen en neem de eerste die klopt.
 2. Lukt dat niet: een slimmere zoekmethode (backtracking) met tijdslimiet.
 3. Nog steeds niets: meld welke **regel** het onmogelijk maakt ("Anna is uitgesloten
-   van iedereen behalve Bert") — nooit een resultaat, zodat de organisator blind blijft.
+   van iedereen behalve Bert"), nooit een resultaat, zodat de organisator blind blijft.
 
 ### 3.3 Dubbele namen
 Elke deelnemer krijgt intern een uniek nummer. Bij dubbele namen verschijnt een
@@ -93,7 +93,7 @@ waarschuwing met de suggestie om een initiaal of klas toe te voegen ("Tom V.",
 
 ## 4. Importeren uit Excel / CSV
 
-Bibliotheek: **SheetJS (`xlsx`)** — leest `.xlsx`, `.xls`, `.ods` en `.csv` rechtstreeks
+Bibliotheek: **SheetJS (`xlsx`)**: leest `.xlsx`, `.xls`, `.ods` en `.csv` rechtstreeks
 in de browser.
 
 Werkwijze:
@@ -103,7 +103,7 @@ Werkwijze:
    - naam (verplicht): `naam`, `voornaam` + `achternaam`, `familienaam`, `leerling`
    - klas (optioneel): `klas`, `groep`, `klasgroep`
    - e-mail (**optioneel**): `email`, `e-mail`, `mail`, `emailadres`
-4. **Voorbeeldtabel** met keuzemenu's om de herkenning te corrigeren ("E-mail: — geen —"
+4. **Voorbeeldtabel** met keuzemenu's om de herkenning te corrigeren ("E-mail: geen"
    is een geldige keuze) en een vinkje "eerste rij bevat titels".
 5. Controle: spaties wegwerken, lege rijen overslaan, ongeldige e-mails en dubbele
    namen markeren (waarschuwing, nooit blokkerend).
@@ -138,9 +138,9 @@ Extra:
 
 Eerlijke kanttekening: een organisator die echt wil valsspelen, kan altijd een kaartje
 omdraaien of openvouwen. De blinde modus zorgt ervoor dat je **nooit per ongeluk**
-iets ziet — ook niet op het scherm of in het afdrukvoorbeeld (zie §5.2).
+iets ziet, ook niet op het scherm of in het afdrukvoorbeeld (zie §5.2).
 
-### 5.2 Afdrukbare kaartjes — keuze: namen of QR-code
+### 5.2 Afdrukbare kaartjes: namen of QR-code
 
 Bij het afdrukken kies je:
 
@@ -166,7 +166,7 @@ Beide opties gebruiken dezelfde slimme lay-out die de organisator blind houdt:
   hoe je printer het papier draait.
 
 **Lay-out**
-- A4, 8 kaartjes per pagina (2 × 4) → 13 vellen voor 100 leerlingen.
+- A4, 15 kaartjes per pagina (3 kolommen × 5 rijen) → 7 vellen voor 100 leerlingen.
 - Snijlijnen; optioneel een vouwlijn zodat het kaartje dicht kan.
 - Gesorteerd per klas, daarna op naam: uitdelen per klas gaat vlot.
 - Optioneel: een **uitdeellijst** per klas (namen + vakje om af te vinken, zonder
@@ -198,7 +198,7 @@ Twee manieren:
 | Manier | Hoe | Volledig blind? | Server nodig? |
 |---|---|---|---|
 | **Automatisch versturen** (aanbevolen) | De website verstuurt zelf een e-mail naar elke deelnemer met zijn doelwit. De organisator ziet de inhoud nooit. | **Ja** | Ja, een klein serverfunctietje |
-| **Via je eigen mailprogramma** | Per deelnemer een knop die een e-mail voorbereidt in je eigen mailprogramma. De e-mail bevat **enkel een geheime link** (zoals bij de QR-code), nooit de naam van het doelwit — anders zie je het in je verzonden items. | Bijna: je mag de link zelf niet aanklikken | Nee |
+| **Via je eigen mailprogramma** | Per deelnemer een knop die een e-mail voorbereidt in je eigen mailprogramma. De e-mail bevat **enkel een geheime link** (zoals bij de QR-code), nooit de naam van het doelwit, anders zie je het in je verzonden items. | Bijna: je mag de link zelf niet aanklikken | Nee |
 
 Automatisch versturen gebeurt via **Brevo** (e-maildienst) en een **Cloudflare Worker**
 (klein serverfunctietje). De namen en adressen worden enkel gebruikt om te versturen en
@@ -303,7 +303,7 @@ gotcha/
 │   ├── App.tsx                    # stappen + onthulpagina
 │   ├── lib/
 │   │   ├── chain.ts               # schudden + één lus (+ uitsluitingen)
-│   │   ├── random.ts              # eerlijke willekeur + Fisher–Yates
+│   │   ├── random.ts              # eerlijke willekeur + Fisher-Yates
 │   │   ├── importFile.ts          # Excel/CSV inlezen + kolommen herkennen
 │   │   ├── exportFile.ts          # Excel-export (enkel niet-blinde modus)
 │   │   ├── token.ts               # versleutelde QR-/e-mailinhoud
@@ -336,14 +336,14 @@ gotcha/
 
 ## 9. Schermen
 
-1. **Start** — kies het thema: 🔪 Gotcha · 🎅 Secret Santa · 💘 Secret Valentine
+1. **Start**: kies het thema: 🔪 Gotcha · 🎅 Secret Santa · 💘 Secret Valentine
    (verandert enkel woorden en kleuren). Naam van het spel, optioneel datum/budget,
    spelregels. Vinkje **"Ik speel zelf mee"** (standaard aan) → blinde modus.
-2. **Deelnemers** — tabel met naam, klas (optioneel), e-mail (optioneel); knoppen
+2. **Deelnemers**: tabel met naam, klas (optioneel), e-mail (optioneel); knoppen
    "+ toevoegen", "Importeer Excel/CSV", "Plak lijst". Teller + waarschuwingen (minder
    dan 3, dubbele namen, ongeldige e-mails). De organisator voegt zichzelf ook toe.
-3. **Regels** (later) — uitsluitingen, "niet iemand uit dezelfde klas".
-4. **Trekking** — grote knop "Maak de ketting". Bevestiging: "Je zult het resultaat
+3. **Regels** (later): uitsluitingen, "niet iemand uit dezelfde klas".
+4. **Trekking**: grote knop "Maak de ketting". Bevestiging: "Je zult het resultaat
    niet kunnen zien. Doorgaan?" → "Ketting gemaakt voor 100 spelers ✔".
 5. **Verdelen**
    - *Kaartjes afdrukken*: keuze **Namen** of **QR-code**, keuze recto-verso of
@@ -352,36 +352,36 @@ gotcha/
      persoon via je eigen mailprogramma.
    - *Verzegelde back-up* downloaden.
    - "Opnieuw trekken" met waarschuwing dat alle vorige kaartjes/e-mails ongeldig worden.
-6. **Onthulpagina** (na QR-scan of klik in e-mail) — "Hallo Anna, tik om je doelwit te
+6. **Onthulpagina** (na QR-scan of klik in e-mail): "Hallo Anna, tik om je doelwit te
    zien" → "Jouw doelwit is: Bert (5B)" + spelregels.
 
 ---
 
 ## 10. Stappenplan
 
-### Fase 1 — Klaar voor de klas ✅
+### Fase 1: Klaar voor de klas ✅
 - [x] Project opzetten: Vite + React + TypeScript + Tailwind, Vitest.
 - [x] `random.ts` + `chain.ts` met volledige tests (één lus, niemand zichzelf,
       eerlijke verdeling).
 - [x] Deelnemerslijst (naam, klas, e-mail optioneel), bewaard in de browser.
-- [x] Plakken uit Excel (met herkenning van kolomtitels) — naar voren gehaald uit fase 2.
+- [x] Plakken uit Excel (met herkenning van kolomtitels), naar voren gehaald uit fase 2.
 - [x] Thema + "Ik speel zelf mee" (blinde modus); trekking versleuteld bewaard.
 - [x] Afdrukbare kaartjes **met namen**, recto-verso lay-out + veiligheidspatroon,
       testpagina, uitdeellijst.
 - [x] Online zetten via GitHub Pages (workflow klaar; Pages nog aanzetten in GitHub).
 
-### Fase 2 — Import & QR
+### Fase 2: Import & QR
 - [ ] Excel/CSV-import met kolomherkenning + voorbeeldtabel; sjabloon.
 - [ ] Kaartjes **met QR-code** + onthulpagina.
 - [ ] Verzegelde back-up met wachtwoord.
 - [ ] Niet-blinde modus met overzicht + Excel-export.
 
-### Fase 3 — E-mail voor vrienden
+### Fase 3: E-mail voor vrienden
 - [ ] Per deelnemer "mail voorbereiden" in eigen mailprogramma (met geheime link).
 - [ ] Serverfunctie + e-maildienst voor automatisch versturen (volledig blind).
 - [ ] E-mailsjabloon per thema.
 
-### Fase 4 — Extra's
+### Fase 4: Extra's
 - [ ] Uitsluitingen (+ "niet uit dezelfde klas") met duidelijke foutmelding.
 - [ ] Levenscodes tegen valse kills.
 
@@ -395,7 +395,7 @@ gotcha/
 - **Blinde modus**: geen enkel scherm toont het doelwit van een andere deelnemer
   (automatisch gecontroleerd).
 - **Kaartjes**: elke voorkant valt na recto-verso precies op de juiste achterkant;
-  100 leerlingen → 13 vellen; QR-codes scanbaar (manueel testen met een gsm).
+  100 leerlingen → 7 vellen; QR-codes scanbaar (manueel testen met een gsm).
 - **Import**: testbestanden (`.xlsx`, `.csv` met `;` en `,`, Nederlandse kolomtitels,
   zonder e-mailkolom, half ingevulde e-mails, lege rijen, aparte voor- en achternaam).
 - **Versleuteling / back-up**: heen en terug werkt; foute link of fout wachtwoord geeft
@@ -407,7 +407,7 @@ gotcha/
 ## 12. Privacy & bijzondere gevallen
 
 - Alles blijft in de browser, behalve bij automatisch e-mailen. Leerlingennamen komen
-  nooit op een server — belangrijk voor de GDPR op school.
+  nooit op een server. Belangrijk voor de GDPR op school.
 - "Wis alle gegevens"-knop.
 - Minder dan 3 deelnemers: waarschuwing.
 - Opnieuw trekken maakt alle vorige kaartjes/e-mails ongeldig → duidelijke waarschuwing.

@@ -45,14 +45,14 @@ function SecurityPattern({ id }: { id: string }) {
 function CardFront({ player, theme, eventName, rules }: { player: Participant; theme: Theme; eventName: string; rules: string }) {
   return (
     <div className="card card-front flex flex-col">
-      <div className="text-[9pt] font-semibold uppercase tracking-wider text-slate-500">
+      <div className="text-[7pt] font-semibold uppercase tracking-wider text-slate-500">
         {theme.emoji} {eventName}
       </div>
-      <div className="mt-[3mm] text-[20pt] font-bold leading-tight">{player.name}</div>
-      {player.klas && <div className="text-[12pt] text-slate-600">{player.klas}</div>}
-      <div className="mt-auto text-[7.5pt] leading-snug text-slate-600">{rules}</div>
-      <div className="mt-[2mm] text-[8pt] font-semibold text-slate-800">
-        Draai om voor je {theme.id === 'gotcha' ? 'doelwit' : 'geheime persoon'} — toon het aan niemand!
+      <div className="mt-[2mm] text-[14pt] font-bold leading-tight break-words">{player.name}</div>
+      {player.klas && <div className="text-[10pt] text-slate-600">{player.klas}</div>}
+      <div className="mt-auto text-[6pt] leading-snug text-slate-600">{rules}</div>
+      <div className="mt-[1.5mm] text-[6.5pt] font-semibold text-slate-800">
+        Draai om voor je {theme.id === 'gotcha' ? 'doelwit' : 'geheime persoon'}. Toon het aan niemand!
       </div>
     </div>
   );
@@ -63,10 +63,10 @@ function CardBack({ target, theme, patternId }: { target: Participant; theme: Th
     <div className="card card-back">
       <SecurityPattern id={patternId} />
       <div className="relative flex h-full flex-col items-center justify-center text-center">
-        <div className="text-[18pt]">{theme.emoji}</div>
-        <div className="text-[10pt] font-semibold text-slate-700">{theme.targetIntro}</div>
-        <div className="mt-[1mm] text-[22pt] font-extrabold leading-tight text-black">{target.name}</div>
-        {target.klas && <div className="text-[13pt] font-bold text-black">{target.klas}</div>}
+        <div className="text-[13pt]">{theme.emoji}</div>
+        <div className="text-[8pt] font-semibold text-slate-700">{theme.targetIntro}</div>
+        <div className="mt-[1mm] text-[15pt] font-extrabold leading-tight text-black break-words">{target.name}</div>
+        {target.klas && <div className="text-[10pt] font-bold text-black">{target.klas}</div>}
       </div>
     </div>
   );
@@ -93,16 +93,16 @@ export default function PrintArea({ job, cards, participants, theme, eventName, 
         <Sheet
           cells={sheet.front.map((n, i) => (
             <div key={i} className="card card-front flex flex-col items-center justify-center">
-              <div className="text-[40pt] font-black">{n}</div>
-              <div className="text-[10pt]">Voorkant</div>
+              <div className="text-[32pt] font-black">{n}</div>
+              <div className="text-[9pt]">Voorkant</div>
             </div>
           ))}
         />
         <Sheet
           cells={sheet.back.map((n, i) => (
             <div key={i} className="card flex flex-col items-center justify-center text-center">
-              <div className="text-[40pt] font-black">{n}</div>
-              <div className="text-[9pt]">Achterkant — dit nummer moet gelijk zijn aan de voorkant.</div>
+              <div className="text-[32pt] font-black">{n}</div>
+              <div className="text-[7pt]">Achterkant: dit nummer moet gelijk zijn aan de voorkant.</div>
             </div>
           ))}
         />
@@ -120,7 +120,7 @@ export default function PrintArea({ job, cards, participants, theme, eventName, 
         {[...byKlas].map(([klas, list]) => (
           <section key={klas} className="handout-klas">
             <h2 className="mb-2 text-[16pt] font-bold">
-              {theme.emoji} {eventName} — uitdeellijst{klas ? ` ${klas}` : ''}
+              {theme.emoji} {eventName}: uitdeellijst{klas ? ` ${klas}` : ''}
             </h2>
             <table className="w-full border-collapse text-[11pt]">
               <tbody>

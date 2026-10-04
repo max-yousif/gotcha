@@ -19,7 +19,7 @@ export const randomInt: RandomInt = (maxExclusive) => {
   }
 };
 
-/** Fisher–Yates: geeft een nieuwe, eerlijk geschudde kopie terug. */
+/** Fisher-Yates: geeft een nieuwe, eerlijk geschudde kopie terug. */
 export function shuffle<T>(items: readonly T[], rand: RandomInt = randomInt): T[] {
   const result = [...items];
   for (let i = result.length - 1; i > 0; i--) {
