@@ -200,10 +200,49 @@ Twee manieren:
 | **Automatisch versturen** (aanbevolen) | De website verstuurt zelf een e-mail naar elke deelnemer met zijn doelwit. De organisator ziet de inhoud nooit. | **Ja** | Ja, een klein serverfunctietje |
 | **Via je eigen mailprogramma** | Per deelnemer een knop die een e-mail voorbereidt in je eigen mailprogramma. De e-mail bevat **enkel een geheime link** (zoals bij de QR-code), nooit de naam van het doelwit — anders zie je het in je verzonden items. | Bijna: je mag de link zelf niet aanklikken | Nee |
 
-Automatisch versturen vraagt een kleine serverfunctie (Cloudflare Worker of Netlify
-Function) en een e-maildienst (**Resend** of **Brevo**, gratis tot enkele honderden
-mails per dag). De namen en adressen worden enkel gebruikt om te versturen en niet
-bewaard. Dit is de enige stap die niet volledig in de browser kan.
+Automatisch versturen gebeurt via **Brevo** (e-maildienst) en een **Cloudflare Worker**
+(klein serverfunctietje). De namen en adressen worden enkel gebruikt om te versturen en
+niet bewaard. Dit is de enige stap die niet volledig in de browser kan.
+
+#### Waarom Brevo + Cloudflare
+- **Brevo** (gratis: 300 mails/dag): je hoeft geen eigen domeinnaam te hebben; je
+  bevestigt gewoon je eigen e-mailadres als afzender. (Resend vraagt een eigen
+  domeinnaam om naar anderen te mailen.)
+- **Cloudflare Worker** (gratis: 100 000 verzoeken/dag): bewaart de geheime Brevo-sleutel
+  veilig, buiten de website. De sleutel mag **nooit** in de websitecode of in GitHub
+  staan, anders kan iedereen er mails mee versturen.
+
+#### Hoe het werkt
+```
+Website (browser)  --(lijst: naam, e-mail, doelwit + wachtwoord)-->  Cloudflare Worker
+Cloudflare Worker  --(geheime API-sleutel)-->  Brevo  -->  e-mail naar elke deelnemer
+```
+- De website stuurt de lijst rechtstreeks naar de Worker; de organisator ziet de inhoud
+  niet. De Worker antwoordt enkel "12 van 12 verstuurd" of "fout bij anna@…".
+- Beveiliging tegen misbruik: de Worker vraagt een **organisatorwachtwoord** (enkel jij
+  kent het), weigert meer dan 50 ontvangers per keer en verstuurt enkel het vaste
+  e-mailsjabloon (geen vrije tekst).
+
+#### Wat de organisator eenmalig doet (± 15 minuten)
+1. **Brevo**: gratis account op brevo.com → *Senders, Domains & Dedicated IPs* → je
+   eigen e-mailadres toevoegen als afzender en bevestigen via de mail die je krijgt →
+   *SMTP & API* → *API Keys* → nieuwe sleutel maken (niet delen, niet in chat plakken).
+2. **Cloudflare**: gratis account op cloudflare.com (geen domeinnaam nodig).
+3. Worker publiceren (kant-en-klaar in `api/`, met een stap-voor-stap uitleg in
+   `api/README.md`):
+   ```
+   npx wrangler login
+   npx wrangler secret put BREVO_API_KEY       # sleutel uit stap 1
+   npx wrangler secret put SENDER_EMAIL        # je bevestigde afzenderadres
+   npx wrangler secret put ORGANIZER_PASSWORD  # zelf gekozen wachtwoord
+   npx wrangler deploy
+   ```
+4. Het adres van de Worker (bv. `https://gotcha-mail.<naam>.workers.dev`) eenmalig
+   invullen in de instellingen van de website.
+
+Tip: stuur eerst een **testmail** naar jezelf (knop in de app, met een nep-doelwit) om
+te controleren dat de mail niet in spam belandt. Laat vrienden ook even in hun
+spammap kijken bij de eerste keer.
 
 E-mailtekst per thema, bv. Gotcha:
 > **Onderwerp:** Jouw doelwit voor Gotcha 2026 🔪
@@ -246,7 +285,7 @@ Later (optioneel):
 | Taal | Nederlands | Teksten in één bestand (`nl.ts`), later uitbreidbaar |
 | Tests | **Vitest** + Playwright | Algoritme, import, kaartjes |
 | Hosting | **GitHub Pages** via GitHub Actions | Gratis, publiceert automatisch |
-| E-mail (fase 3) | Cloudflare Worker / Netlify Function + **Resend** of **Brevo** | Enkel voor automatisch versturen |
+| E-mail (fase 3) | **Cloudflare Worker** + **Brevo** | Gratis, geen domeinnaam nodig, sleutel blijft geheim |
 
 ---
 
@@ -281,7 +320,9 @@ gotcha/
 │   ├── i18n/nl.ts
 │   └── styles.css
 ├── api/
-│   └── send-mail.ts               # fase 3: serverfunctie voor e-mail
+│   ├── worker.ts                  # fase 3: Cloudflare Worker → Brevo
+│   ├── wrangler.toml
+│   └── README.md                  # stap-voor-stap installatie
 ├── tests/
 │   ├── chain.test.ts
 │   ├── importFile.test.ts
@@ -388,11 +429,9 @@ gotcha/
 - **Geen WhatsApp/gsm-nummers**: vrienden krijgen hun doelwit via **e-mail**.
 - Gotcha volgens de klassieke regel "slachtoffer geeft zijn kaartje af", dus geen
   centrale opvolging nodig.
+- De schoolprinter kan **recto-verso** → dat is de standaard lay-out voor kaartjes.
+- Automatisch e-mailen via **Brevo + Cloudflare Worker** (zie §5.4).
 
 ## 14. Nog open
 
-1. Heeft de schoolprinter recto-verso? (Anders gebruiken we de methode "twee keer door
-   de printer" of het vouwkaartje.)
-2. Automatisch e-mailen vraagt een gratis account bij een e-maildienst (Resend of
-   Brevo) en eventueel een eigen domeinnaam als afzender. Oké, of volstaat "mail
-   voorbereiden in je eigen mailprogramma"?
+- Geen openstaande vragen; fase 1 kan starten.
