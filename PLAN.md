@@ -93,8 +93,9 @@ waarschuwing met de suggestie om een initiaal of klas toe te voegen ("Tom V.",
 
 ## 4. Importeren uit Excel / CSV
 
-Bibliotheek: **SheetJS (`xlsx`)**: leest `.xlsx`, `.xls`, `.ods` en `.csv` rechtstreeks
-in de browser.
+Bibliotheken: **`read-excel-file`** en **`write-excel-file`** voor `.xlsx`, en een eigen
+CSV-lezer voor `.csv` (met `;`, `,` of tab). Oude `.xls`-bestanden: eerst in Excel opslaan als `.xlsx`.
+(SheetJS was het oorspronkelijke plan, maar de npm-versie is verouderd en heeft bekende beveiligingsproblemen.)
 
 Werkwijze:
 1. Bestand slepen of kiezen.
@@ -147,7 +148,7 @@ Bij het afdrukken kies je:
 | Optie | Binnenkant van het kaartje | Gsm nodig? |
 |---|---|---|
 | **Namen** (standaard) | "Jouw doelwit: **Bert Peeters (5B)**" | Nee |
-| **QR-code** | QR-code + korte controlecode; de leerling scant en ziet zijn doelwit op de website | Ja |
+| **QR-code** | Persoonlijke QR-code; de leerling scant en ziet zijn doelwit op de website | Ja |
 
 Beide opties gebruiken dezelfde slimme lay-out die de organisator blind houdt:
 
@@ -186,8 +187,6 @@ afdrukvoorbeeld; de app waarschuwt hiervoor en toont het voorbeeld standaard nie
   nooit naar de server sturen: ook de webhosting ziet geen namen.
 - Bij het scannen: "Hallo Anna, tik om je doelwit te zien" → "Jouw doelwit is: Bert (5B)",
   met een knop "verberg opnieuw".
-- De korte controlecode op het kaartje (bv. `K7F-2QX`) verschijnt ook op het scherm,
-  zodat de leerling weet dat hij zijn eigen kaartje scande.
 
 ### 5.4 Verdelen via e-mail (vrienden)
 Enkel voor deelnemers met een e-mailadres; deelnemers zonder adres krijgen automatisch
@@ -278,7 +277,7 @@ Later (optioneel):
 | Bouwtool | **Vite** | Snel, eenvoudig, statische website |
 | Interface | **React + TypeScript** | Veelgebruikt; types vangen fouten in de ketting op |
 | Opmaak | **Tailwind CSS** | Snel, werkt op gsm/laptop, afdrukstijlen |
-| Excel | **SheetJS (`xlsx`)** | Excel/CSV lezen en schrijven in de browser |
+| Excel | **`read-excel-file`** + **`write-excel-file`** | Excel lezen en schrijven in de browser |
 | QR-codes | **`qrcode`** (npm) | QR-codes als SVG, scherp bij afdrukken |
 | Willekeur / versleuteling | **Web Crypto API** | Ingebouwd in de browser |
 | Opslag | `localStorage` | Deelnemerslijst onthouden (ketting enkel versleuteld) |
@@ -370,11 +369,12 @@ gotcha/
       testpagina, uitdeellijst.
 - [x] Online zetten via GitHub Pages (workflow klaar; Pages nog aanzetten in GitHub).
 
-### Fase 2: Import & QR
-- [ ] Excel/CSV-import met kolomherkenning + voorbeeldtabel; sjabloon.
-- [ ] Kaartjes **met QR-code** + onthulpagina.
-- [ ] Verzegelde back-up met wachtwoord.
-- [ ] Niet-blinde modus met overzicht + Excel-export.
+### Fase 2: Import & QR ✅
+- [x] Excel/CSV-import met kolomherkenning + voorbeeldtabel; sjabloon.
+- [x] Kaartjes **met QR-code** + onthulpagina.
+- [x] Verzegelde back-up met wachtwoord (+ pagina "Back-up openen" om één kaartje opnieuw
+      af te drukken of alles te herstellen op een andere computer).
+- [x] Niet-blinde modus met overzicht + Excel-export.
 
 ### Fase 3: E-mail voor vrienden
 - [ ] Per deelnemer "mail voorbereiden" in eigen mailprogramma (met geheime link).

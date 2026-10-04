@@ -1,5 +1,7 @@
 import { useMemo, useState, type FormEvent } from 'react';
+import { downloadTemplate } from '../lib/importFile';
 import { findDuplicates, isValidEmail, newId, parsePastedList } from '../lib/participants';
+import ImportDialog from './ImportDialog';
 import type { Participant } from '../lib/types';
 import { Button, inputClass, Notice, Section } from './ui';
 
@@ -13,7 +15,8 @@ const emptyForm = { name: '', klas: '', email: '' };
 
 export default function ParticipantsSection({ participants, onChange, playing }: Props) {
   const [form, setForm] = useState(emptyForm);
-  const [pasteOpen, setPasteOpen] = useState(participants.length === 0);
+  const [pasteOpen, setPasteOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
   const [pasteText, setPasteText] = useState('');
   const [pasteResult, setPasteResult] = useState<string | null>(null);
 
@@ -33,6 +36,13 @@ export default function ParticipantsSection({ participants, onChange, playing }:
     onChange([...participants, ...parsed.map((p) => ({ ...p, id: newId() }))]);
     setPasteResult(`${parsed.length} ${parsed.length === 1 ? 'deelnemer' : 'deelnemers'} toegevoegd.`);
     setPasteText('');
+  };
+
+  const importPeople = (people: Omit<Participant, 'id'>[], mode: 'add' | 'replace') => {
+    if (mode === 'replace' && !confirm(`De huidige ${participants.length} deelnemers vervangen door ${people.length} nieuwe?`)) return;
+    const added = people.map((p) => ({ ...p, id: newId() }));
+    onChange(mode === 'replace' ? added : [...participants, ...added]);
+    setImportOpen(false);
   };
 
   const update = (id: string, field: keyof Omit<Participant, 'id'>, value: string) =>
@@ -66,7 +76,17 @@ export default function ParticipantsSection({ participants, onChange, playing }:
         </Button>
       </form>
 
-      <div className="mt-4 rounded-xl border border-slate-200">
+      <div className="mt-4 flex flex-wrap items-center gap-2">
+        <Button onClick={() => setImportOpen(true)}>📂 Excel- of CSV-bestand openen</Button>
+        <button type="button" className="px-2 text-sm text-slate-600 underline hover:text-slate-900" onClick={() => void downloadTemplate()}>
+          Sjabloon downloaden
+        </button>
+      </div>
+      {importOpen && (
+        <ImportDialog onImport={importPeople} onClose={() => setImportOpen(false)} hasParticipants={participants.length > 0} />
+      )}
+
+      <div className="mt-3 rounded-xl border border-slate-200">
         <button
           type="button"
           className="flex w-full items-center justify-between px-4 py-3 text-left text-sm font-medium"

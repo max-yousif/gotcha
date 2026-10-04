@@ -13,7 +13,13 @@ export interface Settings {
   rules: string;
   /** De organisator speelt mee → blinde modus. */
   playing: boolean;
+  /** Wat er op de achterkant van een kaartje staat. */
+  cardType: CardType;
+  flip: Flip;
 }
+
+/** Namen: het doelwit staat op het kaartje. QR: de leerling scant en ziet het doelwit op de website. */
+export type CardType = 'names' | 'qr';
 
 export interface Draw {
   /** Volgorde van de lus (participant-id's). */
