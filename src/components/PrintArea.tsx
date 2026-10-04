@@ -2,13 +2,28 @@ import type { CSSProperties, ReactNode } from 'react';
 import { CARD_H, CARD_W, COLS, layoutSheets, MARGIN_X, MARGIN_Y, PER_SHEET, ROWS } from '../lib/cardLayout';
 import { compareByKlasAndName } from '../lib/participants';
 import type { Theme } from '../lib/themes';
-import type { Flip, Participant } from '../lib/types';
+import { qrPath } from '../lib/qr';
+import type { CardType, Flip, Participant } from '../lib/types';
 
 export type PrintJob = 'cards' | 'test' | 'handout';
 
 export interface CardData {
   player: Participant;
   target: Participant;
+}
+
+/** Alles wat nodig is om af te drukken. */
+export interface PrintRequest {
+  job: PrintJob;
+  cards: CardData[];
+  participants: Participant[];
+  theme: Theme;
+  eventName: string;
+  rules: string;
+  flip: Flip;
+  cardType: CardType;
+  /** Bij QR-kaartjes: de link per speler-id. */
+  qrUrls?: Map<string, string>;
 }
 
 const sheetStyle: CSSProperties = {
@@ -42,7 +57,8 @@ function SecurityPattern({ id }: { id: string }) {
   );
 }
 
-function CardFront({ player, theme, eventName, rules }: { player: Participant; theme: Theme; eventName: string; rules: string }) {
+function CardFront({ player, theme, eventName, rules, cardType }: { player: Participant; theme: Theme; eventName: string; rules: string; cardType: CardType }) {
+  const what = theme.id === 'gotcha' ? 'doelwit' : 'geheime persoon';
   return (
     <div className="card card-front flex flex-col">
       <div className="text-[7pt] font-semibold uppercase tracking-wider text-slate-500">
@@ -52,7 +68,9 @@ function CardFront({ player, theme, eventName, rules }: { player: Participant; t
       {player.klas && <div className="text-[10pt] text-slate-600">{player.klas}</div>}
       <div className="mt-auto text-[6pt] leading-snug text-slate-600">{rules}</div>
       <div className="mt-[1.5mm] text-[6.5pt] font-semibold text-slate-800">
-        Draai om voor je {theme.id === 'gotcha' ? 'doelwit' : 'geheime persoon'}. Toon het aan niemand!
+        {cardType === 'qr'
+          ? `Scan de QR-code op de achterkant voor je ${what}. Toon het aan niemand!`
+          : `Draai om voor je ${what}. Toon het aan niemand!`}
       </div>
     </div>
   );
@@ -72,19 +90,36 @@ function CardBack({ target, theme, patternId }: { target: Participant; theme: Th
   );
 }
 
-const empty = (key: string) => <div key={key} />;
-
-interface Props {
-  job: PrintJob | null;
-  cards: CardData[];
-  participants: Participant[];
-  theme: Theme;
-  eventName: string;
-  rules: string;
-  flip: Flip;
+function QrCode({ url }: { url: string }) {
+  const { size, path } = qrPath(url);
+  return (
+    <svg viewBox={`0 0 ${size} ${size}`} className="h-[36mm] w-[36mm] bg-white" shapeRendering="crispEdges" aria-hidden="true">
+      <rect width={size} height={size} fill="white" />
+      <path d={path} fill="black" />
+    </svg>
+  );
 }
 
-export default function PrintArea({ job, cards, participants, theme, eventName, rules, flip }: Props) {
+function CardBackQr({ url, theme, patternId }: { url: string; theme: Theme; patternId: string }) {
+  return (
+    <div className="card card-back">
+      <SecurityPattern id={patternId} />
+      <div className="relative flex h-full flex-col items-center justify-center text-center">
+        <div className="mb-[1mm] rounded bg-white px-[2mm] text-[7pt] font-semibold text-slate-700">
+          {theme.emoji} Scan om je {theme.id === 'gotcha' ? 'doelwit' : 'geheime persoon'} te zien
+        </div>
+        <QrCode url={url} />
+      </div>
+    </div>
+  );
+}
+
+const empty = (key: string) => <div key={key} />;
+
+export default function PrintArea({ request }: { request: PrintRequest | null }) {
+  if (!request) return null;
+  const { job, cards, participants, theme, eventName, rules, flip, cardType, qrUrls } = request;
+
   if (job === 'test') {
     const numbers = Array.from({ length: PER_SHEET }, (_, i) => i + 1);
     const [sheet] = layoutSheets(numbers, flip, (n) => n, (n) => n);
@@ -141,21 +176,31 @@ export default function PrintArea({ job, cards, participants, theme, eventName, 
 
   if (job === 'cards') {
     const sorted = [...cards].sort((a, b) => compareByKlasAndName(a.player, b.player));
-    const sheets = layoutSheets(sorted, flip, (c) => c.player, (c) => c.target);
+    const sheets = layoutSheets(sorted, flip, (c) => c.player, (c) => c);
     return (
       <div className="print-area">
         {sheets.flatMap((sheet, s) => [
           <Sheet
             key={`f${s}`}
             cells={sheet.front.map((p, i) =>
-              p ? <CardFront key={i} player={p} theme={theme} eventName={eventName} rules={rules} /> : empty(`${i}`),
+              p ? (
+                <CardFront key={i} player={p} theme={theme} eventName={eventName} rules={rules} cardType={cardType} />
+              ) : (
+                empty(`${i}`)
+              ),
             )}
           />,
           <Sheet
             key={`b${s}`}
-            cells={sheet.back.map((t, i) =>
-              t ? <CardBack key={i} target={t} theme={theme} patternId={`sec-${s}-${i}`} /> : empty(`${i}`),
-            )}
+            cells={sheet.back.map((c, i) => {
+              if (!c) return empty(`${i}`);
+              const url = qrUrls?.get(c.player.id);
+              return cardType === 'qr' && url ? (
+                <CardBackQr key={i} url={url} theme={theme} patternId={`sec-${s}-${i}`} />
+              ) : (
+                <CardBack key={i} target={c.target} theme={theme} patternId={`sec-${s}-${i}`} />
+              );
+            })}
           />,
         ])}
       </div>

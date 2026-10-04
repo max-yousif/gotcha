@@ -1,5 +1,5 @@
 import { PER_SHEET } from '../lib/cardLayout';
-import type { Flip } from '../lib/types';
+import type { CardType, Flip } from '../lib/types';
 import type { PrintJob } from './PrintArea';
 import { Button, Notice, Section } from './ui';
 
@@ -8,11 +8,31 @@ interface Props {
   ready: boolean;
   flip: Flip;
   onFlipChange: (f: Flip) => void;
+  cardType: CardType;
+  onCardTypeChange: (t: CardType) => void;
   onPrint: (job: PrintJob) => void;
   playing: boolean;
 }
 
-export default function PrintSection({ count, ready, flip, onFlipChange, onPrint, playing }: Props) {
+function Choice<T extends string>({ name, value, options, onChange }: { name: string; value: T; options: [T, string][]; onChange: (v: T) => void }) {
+  return (
+    <div className="flex flex-wrap gap-2">
+      {options.map(([v, label]) => (
+        <label
+          key={v}
+          className={`cursor-pointer rounded-lg border-2 px-4 py-2 text-sm ${value === v ? 'border-[var(--accent)] bg-[var(--accent-soft)]' : 'border-slate-200'}`}
+        >
+          <input type="radio" name={name} value={v} checked={value === v} onChange={() => onChange(v)} className="sr-only" />
+          {label}
+        </label>
+      ))}
+    </div>
+  );
+}
+
+const isLocal = () => ['localhost', '127.0.0.1', ''].includes(location.hostname);
+
+export default function PrintSection({ count, ready, flip, onFlipChange, cardType, onCardTypeChange, onPrint, playing }: Props) {
   const sheets = Math.ceil(count / PER_SHEET);
 
   return (
@@ -37,25 +57,43 @@ export default function PrintSection({ count, ready, flip, onFlipChange, onPrint
           </div>
 
           <fieldset>
+            <legend className="mb-2 font-medium">Soort kaartje</legend>
+            <Choice
+              name="cardType"
+              value={cardType}
+              onChange={onCardTypeChange}
+              options={[
+                ['names', 'Namen: het doelwit staat op de achterkant'],
+                ['qr', 'QR-code: scannen met een gsm'],
+              ]}
+            />
+            {cardType === 'qr' && (
+              <p className="mt-2 text-sm text-slate-600">
+                Op de achterkant staat een persoonlijke QR-code in plaats van een naam. Wie scant, ziet zijn doelwit op deze
+                website. Op papier staat dus nergens een naam van een doelwit.
+              </p>
+            )}
+            {cardType === 'qr' && isLocal() && (
+              <div className="mt-2">
+                <Notice tone="warn">
+                  Je gebruikt de website nu op je eigen computer ({location.host || 'lokaal bestand'}). De QR-codes werken enkel
+                  als je afdrukt vanaf de online website.
+                </Notice>
+              </div>
+            )}
+          </fieldset>
+
+          <fieldset>
             <legend className="mb-2 font-medium">Omdraaien langs</legend>
-            <div className="flex flex-wrap gap-2">
-              {(
-                [
-                  ['long', 'Lange zijde (meest gebruikt)'],
-                  ['short', 'Korte zijde'],
-                ] as [Flip, string][]
-              ).map(([value, label]) => (
-                <label
-                  key={value}
-                  className={`cursor-pointer rounded-lg border-2 px-4 py-2 text-sm ${
-                    flip === value ? 'border-[var(--accent)] bg-[var(--accent-soft)]' : 'border-slate-200'
-                  }`}
-                >
-                  <input type="radio" name="flip" value={value} checked={flip === value} onChange={() => onFlipChange(value)} className="sr-only" />
-                  {label}
-                </label>
-              ))}
-            </div>
+            <Choice
+              name="flip"
+              value={flip}
+              onChange={onFlipChange}
+              options={[
+                ['long', 'Lange zijde (meest gebruikt)'],
+                ['short', 'Korte zijde'],
+              ]}
+            />
             <p className="mt-1 text-xs text-slate-500">Kies hetzelfde als in het printvenster van je printer.</p>
           </fieldset>
 

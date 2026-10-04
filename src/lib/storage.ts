@@ -1,3 +1,4 @@
+import { fromBase64, toBase64 } from './base64';
 import type { Draw, Participant, Settings } from './types';
 
 const KEYS = {
@@ -37,8 +38,8 @@ export const saveSettings = (s: Settings) => write(KEYS.settings, s);
  * toevallig zien, niet tegen iemand die bewust wil valsspelen.)
  */
 
-const b64 = (bytes: Uint8Array) => btoa(String.fromCharCode(...bytes));
-const unb64 = (s: string) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
+const b64 = toBase64;
+const unb64 = fromBase64;
 
 async function drawKey(): Promise<CryptoKey> {
   let raw = read<string>(KEYS.drawKey);

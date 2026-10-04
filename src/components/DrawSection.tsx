@@ -9,9 +9,11 @@ interface Props {
   drawValid: boolean;
   playing: boolean;
   onDraw: () => void;
+  onBackup: () => void;
+  onExport: () => void;
 }
 
-export default function DrawSection({ participants, draw, drawValid, playing, onDraw }: Props) {
+export default function DrawSection({ participants, draw, drawValid, playing, onDraw, onBackup, onExport }: Props) {
   const [showOverview, setShowOverview] = useState(false);
   const n = participants.length;
 
@@ -49,8 +51,12 @@ export default function DrawSection({ participants, draw, drawValid, playing, on
         <Button variant={draw && drawValid ? 'secondary' : 'primary'} onClick={handleDraw} disabled={n < 2} className="px-6 py-3 text-base">
           {draw ? '🔁 Opnieuw trekken' : '🎲 Maak de ketting'}
         </Button>
+        {draw && drawValid && <Button onClick={onBackup}>🔒 Verzegelde back-up</Button>}
         {!playing && draw && drawValid && (
-          <Button onClick={() => setShowOverview(!showOverview)}>{showOverview ? 'Verberg overzicht' : 'Toon overzicht'}</Button>
+          <>
+            <Button onClick={() => setShowOverview(!showOverview)}>{showOverview ? 'Verberg overzicht' : 'Toon overzicht'}</Button>
+            <Button onClick={onExport}>Download als Excel</Button>
+          </>
         )}
       </div>
 

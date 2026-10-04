@@ -33,7 +33,7 @@ export function findDuplicates(participants: readonly Participant[]): Set<string
   return new Set([...byKey.values()].filter((ids) => ids.length > 1).flat());
 }
 
-const HEADER_ALIASES: Record<'name' | 'firstName' | 'lastName' | 'klas' | 'email', string[]> = {
+const HEADER_ALIASES: Record<Field, string[]> = {
   name: ['naam', 'name', 'leerling', 'deelnemer', 'volledige naam'],
   firstName: ['voornaam', 'first name', 'firstname'],
   lastName: ['achternaam', 'familienaam', 'last name', 'lastname', 'surname'],
@@ -41,18 +41,48 @@ const HEADER_ALIASES: Record<'name' | 'firstName' | 'lastName' | 'klas' | 'email
   email: ['email', 'e-mail', 'mail', 'emailadres', 'e-mailadres', 'email address'],
 };
 
-type Column = keyof typeof HEADER_ALIASES;
+/** Kolommen die we kunnen inlezen. */
+export type Field = 'name' | 'firstName' | 'lastName' | 'klas' | 'email';
 
-function detectHeader(cells: string[]): Partial<Record<Column, number>> | null {
-  const found: Partial<Record<Column, number>> = {};
+/** Welke kolom (0, 1, 2, ...) bij welk veld hoort. */
+export type Mapping = Partial<Record<Field, number>>;
+
+export const FIELD_LABELS: Record<Field, string> = {
+  name: 'Naam',
+  firstName: 'Voornaam',
+  lastName: 'Achternaam',
+  klas: 'Klas',
+  email: 'E-mail',
+};
+
+/** Zonder titelrij: naam, klas, e-mail. */
+export const DEFAULT_MAPPING: Mapping = { name: 0, klas: 1, email: 2 };
+
+/** Herkent kolomtitels; geeft null als er geen naamkolom gevonden wordt. */
+export function detectHeader(cells: readonly string[]): Mapping | null {
+  const found: Mapping = {};
   cells.forEach((cell, i) => {
-    const c = cell.trim().toLocaleLowerCase('nl');
-    for (const [col, aliases] of Object.entries(HEADER_ALIASES) as [Column, string[]][]) {
-      if (found[col] === undefined && aliases.includes(c)) found[col] = i;
+    // "E-mail (optioneel)" → "e-mail"
+    const c = cell.replace(/\(.*?\)/g, '').trim().toLocaleLowerCase('nl');
+    for (const [field, aliases] of Object.entries(HEADER_ALIASES) as [Field, string[]][]) {
+      if (found[field] === undefined && aliases.includes(c)) found[field] = i;
     }
   });
-  const hasName = found.name !== undefined || found.firstName !== undefined;
+  const hasName = found.name !== undefined || found.firstName !== undefined || found.lastName !== undefined;
   return hasName ? found : null;
+}
+
+/** Zet rijen om naar deelnemers volgens de gekozen kolommen; rijen zonder naam vallen weg. */
+export function rowsToParticipants(rows: readonly (readonly string[])[], mapping: Mapping): Omit<Participant, 'id'>[] {
+  const cell = (row: readonly string[], field: Field) =>
+    mapping[field] === undefined ? '' : (row[mapping[field]!] ?? '').trim();
+
+  return rows
+    .map((row) => {
+      const name = cell(row, 'name') || [cell(row, 'firstName'), cell(row, 'lastName')].filter(Boolean).join(' ');
+      return { name, klas: cell(row, 'klas'), email: cell(row, 'email') };
+    })
+    .filter((p) => p.name !== '');
 }
 
 /**
@@ -71,15 +101,5 @@ export function parsePastedList(text: string): Omit<Participant, 'id'>[] {
   const rows = lines.map((l) => l.split(sep).map((c) => c.trim()));
 
   const header = detectHeader(rows[0]);
-  const cols: Partial<Record<Column, number>> = header ?? { name: 0, klas: 1, email: 2 };
-  const dataRows = header ? rows.slice(1) : rows;
-  const cell = (row: string[], col: Column) => (cols[col] === undefined ? '' : (row[cols[col]!] ?? ''));
-
-  return dataRows
-    .map((row) => {
-      const name =
-        cell(row, 'name') || [cell(row, 'firstName'), cell(row, 'lastName')].filter(Boolean).join(' ');
-      return { name: name.trim(), klas: cell(row, 'klas'), email: cell(row, 'email') };
-    })
-    .filter((p) => p.name !== '');
+  return rowsToParticipants(header ? rows.slice(1) : rows, header ?? DEFAULT_MAPPING);
 }

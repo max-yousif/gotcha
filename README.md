@@ -6,6 +6,9 @@ ketting (A → B → C → … → A) en drukt recto-verso kaartjes af: voorkant
 achterkant = doelwit.
 
 - **Blinde modus**: de organisator kan meespelen; de website toont nooit wie wie heeft.
+- Deelnemers importeren uit Excel (.xlsx) of CSV, of plakken uit Excel.
+- Kaartjes met **namen** of met een **QR-code** (scannen met een gsm toont het doelwit).
+- **Verzegelde back-up** met wachtwoord om verloren kaartjes opnieuw af te drukken.
 - Alles blijft in de browser, er wordt niets doorgestuurd.
 
 Zie [PLAN.md](PLAN.md) voor het volledige plan en de volgende fases.
