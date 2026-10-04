@@ -1,0 +1,9 @@
+name = "gotcha-mail"
+main = "worker.ts"
+compatibility_date = "2026-01-01"
+
+[vars]
+# De website die e-mails mag laten versturen (zonder / op het einde).
+ALLOWED_ORIGIN = "https://max-yousif.github.io"
+# Naam van de afzender zoals ontvangers die zien. Leeg = naam van het spel.
+SENDER_NAME = ""

@@ -6,6 +6,7 @@ const KEYS = {
   settings: 'gotcha.settings',
   draw: 'gotcha.draw',
   drawKey: 'gotcha.drawKey',
+  sent: 'gotcha.sent',
 } as const;
 
 function read<T>(key: string): T | null {
@@ -31,6 +32,21 @@ export const saveParticipants = (p: Participant[]) => write(KEYS.participants, p
 
 export const loadSettings = () => read<Settings>(KEYS.settings);
 export const saveSettings = (s: Settings) => write(KEYS.settings, s);
+
+/** Wie al een e-mail kreeg voor een bepaalde trekking (enkel id's, geen doelwitten). */
+interface SentState {
+  drawCreatedAt: string;
+  ids: string[];
+}
+
+export function loadSent(drawCreatedAt: string): Set<string> {
+  const s = read<SentState>(KEYS.sent);
+  return new Set(s && s.drawCreatedAt === drawCreatedAt ? s.ids : []);
+}
+
+export function saveSent(drawCreatedAt: string, ids: Set<string>): void {
+  write(KEYS.sent, { drawCreatedAt, ids: [...ids] });
+}
 
 /*
  * De trekking wordt versleuteld bewaard, zodat de organisator ze niet per ongeluk

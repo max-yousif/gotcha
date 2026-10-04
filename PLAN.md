@@ -376,10 +376,12 @@ gotcha/
       af te drukken of alles te herstellen op een andere computer).
 - [x] Niet-blinde modus met overzicht + Excel-export.
 
-### Fase 3: E-mail voor vrienden
-- [ ] Per deelnemer "mail voorbereiden" in eigen mailprogramma (met geheime link).
-- [ ] Serverfunctie + e-maildienst voor automatisch versturen (volledig blind).
-- [ ] E-mailsjabloon per thema.
+### Fase 3: E-mail voor vrienden ✅
+- [x] Per deelnemer "mail voorbereiden" in eigen mailprogramma (met geheime link).
+- [x] Serverfunctie (`api/`, Cloudflare Worker) + Brevo voor automatisch versturen
+      (volledig blind), met organisatorwachtwoord, toegelaten website en max. 50 per keer.
+- [x] E-mailsjabloon per thema; testmail naar jezelf; status per deelnemer.
+- [x] Kaartjes afdrukken voor enkel de deelnemers zonder e-mail.
 
 ### Fase 4: Extra's
 - [ ] Uitsluitingen (+ "niet uit dezelfde klas") met duidelijke foutmelding.

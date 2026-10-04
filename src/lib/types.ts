@@ -16,6 +16,8 @@ export interface Settings {
   /** Wat er op de achterkant van een kaartje staat. */
   cardType: CardType;
   flip: Flip;
+  /** Adres van de e-mailserver (Cloudflare Worker), bv. https://gotcha-mail.naam.workers.dev */
+  mailServer: string;
 }
 
 /** Namen: het doelwit staat op het kaartje. QR: de leerling scant en ziet het doelwit op de website. */
