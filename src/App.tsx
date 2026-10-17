@@ -17,7 +17,7 @@ import type { BackupContent } from './lib/sealedBackup';
 import * as storage from './lib/storage';
 import { THEMES } from './lib/themes';
 import { REVEAL_PREFIX } from './lib/token';
-import type { CardType, Draw, Participant, Settings } from './lib/types';
+import { usesQr, type CardType, type Draw, type Participant, type Settings } from './lib/types';
 
 const defaultSettings: Settings = {
   theme: 'gotcha',
@@ -72,7 +72,7 @@ export default function App() {
     setPreparing(true);
     try {
       const qrUrls =
-        request.job === 'cards' && request.cardType === 'qr'
+        request.job === 'cards' && usesQr(request.cardType)
           ? await makeQrUrls(request.cards, request.eventName, request.theme.id)
           : undefined;
       flushSync(() => setPrintRequest({ ...request, qrUrls }));

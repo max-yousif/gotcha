@@ -20,8 +20,15 @@ export interface Settings {
   mailServer: string;
 }
 
-/** Namen: het doelwit staat op het kaartje. QR: de leerling scant en ziet het doelwit op de website. */
-export type CardType = 'names' | 'qr';
+/**
+ * names: het doelwit staat op de achterkant.
+ * qr: QR-code op de achterkant; de leerling scant en ziet het doelwit op de website.
+ * qr-front: naam + QR-code samen op de voorkant, enkelzijdig afdrukken.
+ */
+export type CardType = 'names' | 'qr' | 'qr-front';
+
+/** Kaartjes met een QR-code (de links moeten vooraf aangemaakt worden). */
+export const usesQr = (t: CardType) => t === 'qr' || t === 'qr-front';
 
 export interface Draw {
   /** Volgorde van de lus (participant-id's). */

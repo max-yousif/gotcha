@@ -383,6 +383,10 @@ gotcha/
 - [x] E-mailsjabloon per thema; testmail naar jezelf; status per deelnemer.
 - [x] Kaartjes afdrukken voor enkel de deelnemers zonder e-mail.
 
+### Extra (na fase 3)
+- [x] Derde soort kaartje: **QR-code + naam op de voorkant**, enkelzijdig afdrukken
+      (geen recto-verso nodig; op papier staat nergens een doelwit).
+
 ### Fase 4: Extra's
 - [ ] Uitsluitingen (+ "niet uit dezelfde klas") met duidelijke foutmelding.
 - [ ] Levenscodes tegen valse kills.

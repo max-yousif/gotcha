@@ -90,10 +90,10 @@ function CardBack({ target, theme, patternId }: { target: Participant; theme: Th
   );
 }
 
-function QrCode({ url }: { url: string }) {
+function QrCode({ url, size: mm = 36 }: { url: string; size?: number }) {
   const { size, path } = qrPath(url);
   return (
-    <svg viewBox={`0 0 ${size} ${size}`} className="h-[36mm] w-[36mm] bg-white" shapeRendering="crispEdges" aria-hidden="true">
+    <svg viewBox={`0 0 ${size} ${size}`} style={{ width: `${mm}mm`, height: `${mm}mm` }} className="shrink-0 bg-white" shapeRendering="crispEdges" aria-hidden="true">
       <rect width={size} height={size} fill="white" />
       <path d={path} fill="black" />
     </svg>
@@ -110,6 +110,29 @@ function CardBackQr({ url, theme, patternId }: { url: string; theme: Theme; patt
         </div>
         <QrCode url={url} />
       </div>
+    </div>
+  );
+}
+
+/** Enkelzijdig kaartje: naam en QR-code samen op de voorkant. */
+function CardFrontQr({ player, url, theme, eventName }: { player: Participant; url: string; theme: Theme; eventName: string }) {
+  const what = theme.id === 'gotcha' ? 'doelwit' : 'geheime persoon';
+  const { size, path } = qrPath(url);
+  return (
+    <div className="card card-front flex flex-col items-center text-center">
+      <div className="text-[6.5pt] font-semibold uppercase tracking-wider text-slate-500">
+        {theme.emoji} {eventName}
+      </div>
+      <div className={`${player.name.length > 22 ? 'text-[10pt]' : 'text-[12pt]'} font-bold leading-tight break-words`}>{player.name}</div>
+      {player.klas && <div className="text-[8pt] text-slate-600">{player.klas}</div>}
+      {/* De QR-code vult de resterende ruimte (max. 30 mm), zodat lange namen hem niet van het kaartje duwen. */}
+      <div className="flex min-h-0 w-full flex-1 items-center justify-center py-[1mm]">
+        <svg viewBox={`0 0 ${size} ${size}`} className="h-full max-h-[30mm] w-auto bg-white" style={{ aspectRatio: '1' }} shapeRendering="crispEdges" aria-hidden="true">
+          <rect width={size} height={size} fill="white" />
+          <path d={path} fill="black" />
+        </svg>
+      </div>
+      <div className="text-[6pt] font-semibold text-slate-800">Scan voor je {what}. Toon het aan niemand!</div>
     </div>
   );
 }
@@ -169,6 +192,25 @@ export default function PrintArea({ request }: { request: PrintRequest | null })
               </tbody>
             </table>
           </section>
+        ))}
+      </div>
+    );
+  }
+
+  if (job === 'cards' && cardType === 'qr-front') {
+    const sorted = [...cards].sort((a, b) => compareByKlasAndName(a.player, b.player));
+    // Enkelzijdig: enkel voorkanten, geen achterkant nodig.
+    const sheets = layoutSheets(sorted, flip, (c) => c, () => null);
+    return (
+      <div className="print-area">
+        {sheets.map((sheet, s) => (
+          <Sheet
+            key={s}
+            cells={sheet.front.map((c, i) => {
+              const url = c && qrUrls?.get(c.player.id);
+              return c && url ? <CardFrontQr key={i} player={c.player} url={url} theme={theme} eventName={eventName} /> : empty(`${i}`);
+            })}
+          />
         ))}
       </div>
     );
