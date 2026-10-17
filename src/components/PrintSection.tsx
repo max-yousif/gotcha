@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { PER_SHEET } from '../lib/cardLayout';
-import type { CardType, Flip } from '../lib/types';
+import { usesQr, type CardType, type Flip } from '../lib/types';
 import type { PrintJob } from './PrintArea';
 import { Button, Notice, Section } from './ui';
 
@@ -41,6 +41,7 @@ export default function PrintSection({ count, ready, flip, onFlipChange, cardTyp
   const only = onlyWithoutEmail && someHaveEmail;
   const cardCount = only ? withoutEmailCount : count;
   const sheets = Math.ceil(cardCount / PER_SHEET);
+  const duplex = cardType !== 'qr-front';
 
   return (
     <Section step={4} title="Kaartjes afdrukken">
@@ -52,7 +53,15 @@ export default function PrintSection({ count, ready, flip, onFlipChange, cardTyp
             <h3 className="mb-2 font-medium">Instellingen in het printvenster</h3>
             <ul className="list-inside list-disc space-y-1 text-sm text-slate-700">
               <li>
-                <strong>Dubbelzijdig / recto-verso</strong> aan
+                {duplex ? (
+                  <>
+                    <strong>Dubbelzijdig / recto-verso</strong> aan
+                  </>
+                ) : (
+                  <>
+                    <strong>Enkelzijdig</strong> (recto-verso is niet nodig)
+                  </>
+                )}
               </li>
               <li>
                 Schaal <strong>100%</strong> of <strong>werkelijke grootte</strong> (niet "passend maken")
@@ -71,7 +80,8 @@ export default function PrintSection({ count, ready, flip, onFlipChange, cardTyp
               onChange={onCardTypeChange}
               options={[
                 ['names', 'Namen: het doelwit staat op de achterkant'],
-                ['qr', 'QR-code: scannen met een gsm'],
+                ['qr', 'QR-code op de achterkant'],
+                ['qr-front', 'QR-code + naam op de voorkant (enkelzijdig)'],
               ]}
             />
             {cardType === 'qr' && (
@@ -80,7 +90,13 @@ export default function PrintSection({ count, ready, flip, onFlipChange, cardTyp
                 website. Op papier staat dus nergens een naam van een doelwit.
               </p>
             )}
-            {cardType === 'qr' && isLocal() && (
+            {cardType === 'qr-front' && (
+              <p className="mt-2 text-sm text-slate-600">
+                Naam en persoonlijke QR-code staan samen op één kant. Je drukt enkelzijdig af, recto-verso is niet nodig. Wie
+                scant, ziet zijn doelwit op deze website; op papier staat nergens een naam van een doelwit.
+              </p>
+            )}
+            {usesQr(cardType) && isLocal() && (
               <div className="mt-2">
                 <Notice tone="warn">
                   Je gebruikt de website nu op je eigen computer ({location.host || 'lokaal bestand'}). De QR-codes werken enkel
@@ -90,6 +106,7 @@ export default function PrintSection({ count, ready, flip, onFlipChange, cardTyp
             )}
           </fieldset>
 
+          {duplex && (
           <fieldset>
             <legend className="mb-2 font-medium">Omdraaien langs</legend>
             <Choice
@@ -103,6 +120,7 @@ export default function PrintSection({ count, ready, flip, onFlipChange, cardTyp
             />
             <p className="mt-1 text-xs text-slate-500">Kies hetzelfde als in het printvenster van je printer.</p>
           </fieldset>
+          )}
 
           {someHaveEmail && (
             <label className="flex items-start gap-3 rounded-xl border border-slate-200 p-4">
@@ -120,31 +138,34 @@ export default function PrintSection({ count, ready, flip, onFlipChange, cardTyp
           )}
 
           <ol className="space-y-3">
-            <li className="flex flex-wrap items-center gap-3">
-              <Button onClick={() => onPrint('test')}>1. Testpagina afdrukken</Button>
-              <span className="text-sm text-slate-600">
-                Eén vel. Staat op elke achterkant hetzelfde nummer als op de voorkant? Dan is alles goed.
-              </span>
-            </li>
+            {duplex && (
+              <li className="flex flex-wrap items-center gap-3">
+                <Button onClick={() => onPrint('test')}>1. Testpagina afdrukken</Button>
+                <span className="text-sm text-slate-600">
+                  Eén vel. Staat op elke achterkant hetzelfde nummer als op de voorkant? Dan is alles goed.
+                </span>
+              </li>
+            )}
             <li className="flex flex-wrap items-center gap-3">
               <Button variant="primary" onClick={() => onPrint('cards', only)}>
-                2. Kaartjes afdrukken
+                {duplex ? '2. ' : '1. '}Kaartjes afdrukken
               </Button>
               <span className="text-sm text-slate-600">
                 {cardCount} kaartjes op {sheets} {sheets === 1 ? 'vel' : 'vellen'}, gesorteerd per klas.
               </span>
             </li>
             <li className="flex flex-wrap items-center gap-3">
-              <Button onClick={() => onPrint('handout', only)}>3. Uitdeellijst afdrukken</Button>
+              <Button onClick={() => onPrint('handout', only)}>{duplex ? '3. ' : '2. '}Uitdeellijst afdrukken</Button>
               <span className="text-sm text-slate-600">Per klas de namen om af te vinken, zonder doelwitten.</span>
             </li>
           </ol>
 
           {playing && (
             <Notice>
-              <strong>Tip om blind te blijven:</strong> in het afdrukvoorbeeld zie je afwisselend een blad met spelers en een
-              blad met doelwitten, nooit wie bij wie hoort. Laat de kaartjes daarna door een collega of leerling snijden en
-              uitdelen, of snij ze zelf zonder ze om te draaien.
+              <strong>Tip om blind te blijven:</strong>{' '}
+              {cardType === 'qr-front'
+                ? 'op deze kaartjes staan enkel namen en QR-codes, nergens een doelwit. Scan zelf enkel je eigen kaartje.'
+                : 'in het afdrukvoorbeeld zie je afwisselend een blad met spelers en een blad met doelwitten, nooit wie bij wie hoort. Laat de kaartjes daarna door een collega of leerling snijden en uitdelen, of snij ze zelf zonder ze om te draaien.'}
             </Notice>
           )}
         </div>

@@ -94,11 +94,13 @@ export default function BackupPage({ onPrintCard, onRestore }: Props) {
                 <input className={`${inputClass} max-w-xs`} placeholder="Zoek een naam of klas" value={search} onChange={(e) => setSearch(e.target.value)} />
                 <select className={`${inputClass} sm:max-w-xs`} value={cardType} onChange={(e) => setCardType(e.target.value as CardType)}>
                   <option value="names">Kaartje met naam</option>
-                  <option value="qr">Kaartje met QR-code</option>
+                  <option value="qr">Kaartje met QR-code (achterkant)</option>
+                  <option value="qr-front">Kaartje met QR-code (voorkant, enkelzijdig)</option>
                 </select>
               </div>
               <p className="mb-3 text-sm text-slate-600">
-                Het kaartje komt linksboven op een vel (recto-verso, {content.settings.flip === 'short' ? 'korte' : 'lange'} zijde).
+                Het kaartje komt linksboven op een vel (
+                {cardType === 'qr-front' ? 'enkelzijdig' : `recto-verso, ${content.settings.flip === 'short' ? 'korte' : 'lange'} zijde`}).
                 Toon het doelwit enkel als dat echt nodig is.
               </p>
               <div className="max-h-[28rem] overflow-auto rounded-xl border border-slate-200">
